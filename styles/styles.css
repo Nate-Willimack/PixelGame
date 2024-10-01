@@ -1,0 +1,36 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+#gameArea {
+    border: 2px solid white;
+    background-image: url('images/background1.jpg'); /* Set your background image here */
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+}
+
+.player1, .player2 {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+}
+
+.player1 {
+    background-color: blue; /* Or replace with player1 image */
+}
+
+.player2 {
+    background-color: red; /* Or replace with player2 image */
+}
+
+.bullet {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: yellow;
+}
