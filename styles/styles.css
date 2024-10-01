@@ -7,7 +7,7 @@ body {
 
 #gameArea {
     border: 2px solid white;
-    background-image: url('images/background1.jpg'); /* Set your background image here */
+    background-image: url('images/background.jpg');
     background-size: cover;
     position: relative;
     overflow: hidden;
@@ -21,11 +21,11 @@ body {
 }
 
 .player1 {
-    background-color: blue; /* Or replace with player1 image */
+    background-color: blue;
 }
 
 .player2 {
-    background-color: red; /* Or replace with player2 image */
+    background-color: red;
 }
 
 .bullet {
