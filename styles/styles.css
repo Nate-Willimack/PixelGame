@@ -13,24 +13,18 @@ body {
     overflow: hidden;
 }
 
-.player1, .player2 {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background-size: cover;
-}
-
-.player1 {
-    background-color: blue;
-}
-
-.player2 {
-    background-color: red;
-}
-
 .bullet {
     position: absolute;
-    width: 10px;
+    width: 5px;
     height: 10px;
-    background-color: yellow;
+    background-color: red;
+    z-index: 5;
+}
+
+.enemy {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: gray;
+    z-index: 5;
 }

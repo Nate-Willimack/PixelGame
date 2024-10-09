@@ -5,161 +5,135 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("gameArea element not found!");
         return;
     }
-    
-    const player1HealthElement = document.getElementById('player1Health');
-    const player2HealthElement = document.getElementById('player2Health');
 
-    const gameAreaWidth = 800; // Width of the game area
-    const gameAreaHeight = 600; // Height of the game area
-    const bulletSpeed = 10; // Speed of bullets
-    let playerTurn = 1;
-    let player1Health = 100;
-    let player2Health = 100;
-    const bullets = [];
+    const gameAreaWidth = 800;
+    const gameAreaHeight = 600;
+    const playerSpeed = 5;
+    const bulletSpeed = 7;
+    const enemySpeed = 2;
+    let score = 0;
 
-    // Player positions and movement speeds
-    const player1Position = { x: 50, y: 300 };
-    const player2Position = { x: 700, y: 300 };
-    const playerSpeed = 5; // Speed of player movement
-
-    // Set up the game area dimensions and background
     gameArea.style.width = `${gameAreaWidth}px`;
     gameArea.style.height = `${gameAreaHeight}px`;
     gameArea.style.position = 'relative';
+    gameArea.style.backgroundImage = "url('./styles/images/background.jpg')";
+    gameArea.style.overflow = 'hidden';
 
-    // Create players as divs
-    const player1 = document.createElement('div');
-    player1.classList.add('player1');
-    player1.style.left = `${player1Position.x}px`;
-    player1.style.top = `${player1Position.y}px`;
-    gameArea.appendChild(player1);
+    const player = document.createElement('img');
+    player.src = './styles/images/player 1.png';
+    player.style.position = 'absolute';
+    player.style.bottom = '10px';
+    player.style.left = `${gameAreaWidth / 2 - 25}px`;
+    player.style.width = '50px';
+    gameArea.appendChild(player);
 
-    const player2 = document.createElement('div');
-    player2.classList.add('player2');
-    player2.style.left = `${player2Position.x}px`;
-    player2.style.top = `${player2Position.y}px`;
-    gameArea.appendChild(player2);
+    let moveLeft = false;
+    let moveRight = false;
 
-    // Function to update player positions
-    function updatePlayers() {
-        player1.style.left = `${player1Position.x}px`;
-        player1.style.top = `${player1Position.y}px`;
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'ArrowLeft') moveLeft = true;
+        if (e.code === 'ArrowRight') moveRight = true;
+        if (e.code === 'Space') shootBullet();
+    });
 
-        player2.style.left = `${player2Position.x}px`;
-        player2.style.top = `${player2Position.y}px`;
+    document.addEventListener('keyup', (e) => {
+        if (e.code === 'ArrowLeft') moveLeft = false;
+        if (e.code === 'ArrowRight') moveRight = false;
+    });
+
+    function movePlayer() {
+        const currentLeft = parseInt(player.style.left);
+        if (moveLeft && currentLeft > 0) player.style.left = `${currentLeft - playerSpeed}px`;
+        if (moveRight && currentLeft < gameAreaWidth - 50) player.style.left = `${currentLeft + playerSpeed}px`;
     }
 
-    // Function to shoot bullets
-    function shoot(player, direction) {
-        const bullet = {
-            player: player,
-            position: player === 1 ? { ...player1Position } : { ...player2Position },
-            direction: direction
-        };
-        bullets.push(bullet);
+    function shootBullet() {
+        const bullet = document.createElement('div');
+        bullet.classList.add('bullet');
+        bullet.style.left = `${parseInt(player.style.left) + 20}px`;
+        bullet.style.bottom = '60px';
+        gameArea.appendChild(bullet);
     }
 
-    // Function to move bullets and check for collisions
     function moveBullets() {
-        bullets.forEach((bullet, index) => {
-            switch (bullet.direction) {
-                case 'up':
-                    bullet.position.y -= bulletSpeed;
-                    break;
-                case 'down':
-                    bullet.position.y += bulletSpeed;
-                    break;
-                case 'left':
-                    bullet.position.x -= bulletSpeed;
-                    break;
-                case 'right':
-                    bullet.position.x += bulletSpeed;
-                    break;
-            }
-
-            // Create bullet element
-            const bulletElement = document.createElement('div');
-            bulletElement.classList.add('bullet');
-            bulletElement.style.left = `${bullet.position.x + 15}px`; // Adjust bullet offset to appear from center
-            bulletElement.style.top = `${bullet.position.y + 15}px`;
-
-            // Change bullet color to match the player
-            bulletElement.style.backgroundColor = bullet.player === 1 ? 'blue' : 'red';
-
-            gameArea.appendChild(bulletElement);
-
-            // Check if bullet hits player 1
-            if (
-                bullet.player === 2 &&
-                bullet.position.x >= player1Position.x &&
-                bullet.position.x <= player1Position.x + 40 &&
-                bullet.position.y >= player1Position.y &&
-                bullet.position.y <= player1Position.y + 40
-            ) {
-                player1Health -= 10;
-                player1HealthElement.innerText = player1Health;
-                bullets.splice(index, 1); // Remove the bullet
-            }
-
-            // Check if bullet hits player 2
-            if (
-                bullet.player === 1 &&
-                bullet.position.x >= player2Position.x &&
-                bullet.position.x <= player2Position.x + 40 &&
-                bullet.position.y >= player2Position.y &&
-                bullet.position.y <= player2Position.y + 40
-            ) {
-                player2Health -= 10;
-                player2HealthElement.innerText = player2Health;
-                bullets.splice(index, 1); // Remove the bullet
-            }
-
-            // Remove bullets that go out of bounds
-            if (
-                bullet.position.x < 0 ||
-                bullet.position.x > gameAreaWidth ||
-                bullet.position.y < 0 ||
-                bullet.position.y > gameAreaHeight
-            ) {
-                bullets.splice(index, 1); // Remove out-of-bounds bullets
+        const bullets = document.querySelectorAll('.bullet');
+        bullets.forEach(bullet => {
+            const bulletBottom = parseInt(bullet.style.bottom);
+            if (bulletBottom > gameAreaHeight) {
+                bullet.remove();
+            } else {
+                bullet.style.bottom = `${bulletBottom + bulletSpeed}px`;
             }
         });
     }
 
-    // Check win condition
-    function checkWinCondition() {
-        if (player1Health <= 0) {
-            alert('Player 2 wins!');
-        } else if (player2Health <= 0) {
-            alert('Player 1 wins!');
-        }
+    function createEnemy() {
+        const enemy = document.createElement('div');
+        enemy.classList.add('enemy');
+        enemy.style.left = `${Math.random() * (gameAreaWidth - 50)}px`;
+        enemy.style.top = '0px';
+        gameArea.appendChild(enemy);
     }
 
-    // Game loop
+    function moveEnemies() {
+        const enemies = document.querySelectorAll('.enemy');
+        enemies.forEach(enemy => {
+            const enemyTop = parseInt(enemy.style.top);
+            if (enemyTop > gameAreaHeight) {
+                enemy.remove();
+            } else {
+                enemy.style.top = `${enemyTop + enemySpeed}px`;
+            }
+        });
+    }
+
+    function detectCollisions() {
+        const bullets = document.querySelectorAll('.bullet');
+        const enemies = document.querySelectorAll('.enemy');
+
+        bullets.forEach(bullet => {
+            const bulletRect = bullet.getBoundingClientRect();
+            enemies.forEach(enemy => {
+                const enemyRect = enemy.getBoundingClientRect();
+                if (
+                    bulletRect.left < enemyRect.right &&
+                    bulletRect.right > enemyRect.left &&
+                    bulletRect.top < enemyRect.bottom &&
+                    bulletRect.bottom > enemyRect.top
+                ) {
+                    bullet.remove();
+                    enemy.remove();
+                    score += 100;
+                    updateScore();
+                }
+            });
+        });
+    }
+
+    function updateScore() {
+        const scoreElement = document.getElementById('score');
+        scoreElement.innerText = `Score: ${score}`;
+    }
+
     function gameLoop() {
+        movePlayer();
         moveBullets();
-        checkWinCondition();
-        updatePlayers();
+        moveEnemies();
+        detectCollisions();
         requestAnimationFrame(gameLoop);
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (playerTurn === 1) {
-            if (e.key === 'ArrowUp') player1Position.y = Math.max(0, player1Position.y - playerSpeed);
-            if (e.key === 'ArrowDown') player1Position.y = Math.min(gameAreaHeight - 40, player1Position.y + playerSpeed);
-            if (e.key === 'ArrowLeft') player1Position.x = Math.max(0, player1Position.x - playerSpeed);
-            if (e.key === 'ArrowRight') player1Position.x = Math.min(gameAreaWidth - 40, player1Position.x + playerSpeed);
-            if (e.key === ' ') shoot(1, 'right'); // Player 1 shoots with spacebar
-            playerTurn = 2;
-        } else {
-            if (e.key === 'w') player2Position.y = Math.max(0, player2Position.y - playerSpeed);
-            if (e.key === 's') player2Position.y = Math.min(gameAreaHeight - 40, player2Position.y + playerSpeed);
-            if (e.key === 'a') player2Position.x = Math.max(0, player2Position.x - playerSpeed);
-            if (e.key === 'd') player2Position.x = Math.min(gameAreaWidth - 40, player2Position.x + playerSpeed);
-            if (e.key === 'Enter') shoot(2, 'left'); // Player 2 shoots with Enter key
-            playerTurn = 1;
-        }
-    });
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.id = 'score';
+    scoreDisplay.style.position = 'absolute';
+    scoreDisplay.style.top = '10px';
+    scoreDisplay.style.left = '10px';
+    scoreDisplay.style.color = 'white';
+    scoreDisplay.style.fontSize = '20px';
+    scoreDisplay.innerText = 'Score: 0';
+    gameArea.appendChild(scoreDisplay);
 
-    gameLoop(); // Start the game loop
+    setInterval(createEnemy, 2000);
+
+    gameLoop();
 });
