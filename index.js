@@ -80,7 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
         enemies.forEach(enemy => {
             const enemyTop = parseInt(enemy.style.top);
             if (enemyTop > gameAreaHeight) {
-                enemy.remove();
+                endGame();
+                return;
             } else {
                 enemy.style.top = `${enemyTop + enemySpeed}px`;
             }
@@ -121,6 +122,12 @@ document.addEventListener("DOMContentLoaded", () => {
         moveEnemies();
         detectCollisions();
         requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+        gameOver = true;
+        alert("Game over! your score is: " + score);
+        location.reload();
     }
 
     const scoreDisplay = document.createElement('div');
