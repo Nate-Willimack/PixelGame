@@ -2,12 +2,19 @@ body {
     font-family: 'Courier New', Courier, monospace;
     background-color: black;
     color: white;
-    text-align: center;
+}
+
+table {
+    cursor: pointer; 
+}
+
+.nav-link {
+    color: rgba(var(--bs-link-color-rgb)); 
 }
 
 #gameArea {
     border: 2px solid white;
-    background-image: url('images/background.jpg');
+    background-image: url('../images/background.jpg');
     background-size: cover;
     position: relative;
     overflow: hidden;
